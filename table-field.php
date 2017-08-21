@@ -3,7 +3,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 	die();
 }
 
-class GF_Table_Field extends GF_Field {
+class GF_Field_Table extends GF_Field {
 	/**
 	 * @var string $type The field type.
 	 */
@@ -37,13 +37,11 @@ class GF_Table_Field extends GF_Field {
 			'label_setting',
 			'description_setting',
 			'rules_setting',
-			'placeholder_setting',
-			'table_field_add_row',
 			'table_field_add_col',
+			'table_field_add_row',
 			'css_class_setting',
 			'size_setting',
 			'admin_label_setting',
-			'default_value_setting',
 			'visibility_setting',
 			'conditional_logic_field_setting',
 		);
@@ -56,23 +54,7 @@ class GF_Table_Field extends GF_Field {
 	public function is_conditional_logic_supported() {
 		return true;
 	}
-	/**
-	 * The scripts to be included in the form editor.
-	 *
-	 * @return string
-	 */
-	public function get_form_editor_inline_script_on_page_render() {
-		// set the default field label for the simple type field
-		$script = sprintf( "function SetDefaultValues_simple(field) {field.label = '%s';}", $this->get_form_editor_field_title() ) . PHP_EOL;
-		// initialize the fields custom settings
-		$script .= "jQuery(document).bind('gform_load_field_settings', function (event, field, form) {" .
-		           "var inputClass = field.inputClass == undefined ? '' : field.inputClass;" .
-		           "jQuery('#table_field_add_row').val(inputClass);" .
-		           "});" . PHP_EOL;
-		// saving the simple setting
-		$script .= "function SetInputClassSetting(value) {SetFieldProperty('inputClass', value);}" . PHP_EOL;
-		return $script;
-	}
+    
 	/**
 	 * Define the fields inner markup.
 	 *
@@ -103,9 +85,48 @@ class GF_Table_Field extends GF_Field {
 		$required_attribute    = $this->isRequired ? 'aria-required="true"' : '';
 		$invalid_attribute     = $this->failed_validation ? 'aria-invalid="true"' : 'aria-invalid="false"';
 		$disabled_text         = $is_form_editor ? 'disabled="disabled"' : '';
-		// Prepare the input tag for this field.
-		$input = "<input name='input_{$id}' id='{$field_id}' type='text' value='{$value}' class='{$class}' {$tabindex} {$logic_event} {$placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text}/>";
-		return sprintf( "<div class='ginput_container ginput_container_%s'>%s</div>", $this->type, $input );
+        
+        if( $is_form_editor ) {
+            // editor preview
+            $input = "<input id='dummy_input_{$id}' type='hidden' class='{$class}' {$tabindex} {$logic_event} {$placeholder_attribute} {$required_attribute} {$invalid_attribute} {$disabled_text}/>" . PHP_EOL;
+            $input .= '<script type="text/javascript">jQuery( document ).ready( function() { TableFieldModifyPreview(); });</script>';
+            return sprintf( "<div class='ginput_container ginput_container_%s'>%s</div>", $this->type, $input );
+        }
+        else {
+            // actual form display
+            $table .= '';
+            
+            // build the new table
+            $table .= '<table id="input_' . $id . '" class="table_field">';
+                // add a colgroup for every col, to enable row highlighting
+                $table .= str_repeat( '<colgroup></colgroup>', sizeof( $this->cols ) + 1 );
+            
+                $table .= '<thead>';
+                $table .= '<tr>';
+                    $table .= '<th></th>';
+                    
+                    foreach( $this->cols as $col ) {
+                        $table .= '<th>' . $col . '</th>';
+                    }
+                $table .= '</tr>';
+            $table .= '</thead><tbody>';
+                foreach( $this->rows as $rid => $row ) {
+                    $table .= '<tr>';
+                        $table .= '<th>' . $row . '</th>';
+                        // add the individual cells
+                        foreach( $this->cols as $cid => $col ) {
+                            $value = '';        // TODO: fill with actual value
+                            $table .= '<td><input type="text" value="' . $value . '" name="input_' . $id . '[' . $cid . '][' . $rid . ']"></td>';
+                        }
+                    $table .= '</tr>';
+                }
+            
+            $table .= '<tbody></table>';
+            
+            
+            return $table;
+        }
+		
 	}
 }
-GF_Fields::register( new GF_Table_Field() );
+GF_Fields::register( new GF_Field_Table() );

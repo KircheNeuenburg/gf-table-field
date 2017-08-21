@@ -46,7 +46,7 @@ class GFTableField extends GFAddOn {
 	// # SCRIPTS & STYLES -----------------------------------------------------------------------------------------------
     
 	/**
-	 * Include my_script.js when the form contains a 'simple' type field.
+	 * Include my_script.js when the form contains a 'table' type field.
 	 *
 	 * @return array
 	 */
@@ -66,20 +66,20 @@ class GFTableField extends GFAddOn {
 	}
     
 	/**
-	 * Include my_styles.css when the form contains a 'simple' type field.
+	 * Include my_styles.css when the form contains a 'table' type field.
 	 *
 	 * @return array
 	 */
 	public function styles() {
 		$styles = array(
-			/*array(
-				'handle'  => 'my_styles_css',
-				'src'     => $this->get_base_url() . '/css/my_styles.css',
+			array(
+				'handle'  => 'table_field_style',
+				'src'     => $this->get_base_url() . '/style.css',
 				'version' => $this->_version,
 				'enqueue' => array(
-					array( 'field_types' => array( 'simple' ) )
+					array( 'field_types' => array( 'table' ) )
 				)
-			)*/
+			)
 		);
 		return array_merge( parent::styles(), $styles );
 	}
@@ -95,8 +95,8 @@ class GFTableField extends GFAddOn {
 	 */
 	public function tooltips( $tooltips ) {
 		$simple_tooltips = array(
+            'table_field_add_col' => esc_html__( 'Add columns to your table and name them.', 'gf-table-field' ),
 			'table_field_add_row' => esc_html__( 'Add rows to your table and name them.', 'gf-table-field' ),
-			'table_field_add_col' => esc_html__( 'Add columns to your table and name them.', 'gf-table-field' ),
 		);
 		return array_merge( $tooltips, $simple_tooltips );
 	}
@@ -111,23 +111,21 @@ class GFTableField extends GFAddOn {
 		// Add our custom setting just before the 'Custom CSS Class' setting.
 		if ( $position == 350 ) {
 			?>
-			<li class="table_field_add_row field_setting">
-				<label class="section_label" for="table_field_add_row">
-					<?php esc_html_e( 'Rows', 'gf-table-field' ); ?>
-					<?php gform_tooltip( 'table_field_add_row' ) ?>
-				</label>
-				<button id="table_field_add_row" class="button" onclick="TableFieldAddRow(event);"><?php esc_html_e( 'Add Row', 'gf-table-field' ); ?></button>
-			</li>
-			
-			
 			<li class="table_field_add_col field_setting">
-				<label class="section_label" for="table_field_add_col">
+				<label class="section_label" for="table_field_add_col_button">
 					<?php esc_html_e( 'Columns', 'gf-table-field' ); ?>
 					<?php gform_tooltip( 'table_field_add_col' ) ?>
 				</label>
-				<button id="table_field_add_col" class="button" onclick="TableFieldAddCol(event);"><?php esc_html_e( 'Add Column', 'gf-table-field' ); ?></button>
+				<button class="button table_field_add_col_button" onclick="TableFieldAddCol(event);"><?php esc_html_e( 'Add Column', 'gf-table-field' ); ?></button>
 			</li>
-
+			
+			<li class="table_field_add_row field_setting">
+				<label class="section_label" for="table_field_add_row_button">
+					<?php esc_html_e( 'Rows', 'gf-table-field' ); ?>
+					<?php gform_tooltip( 'table_field_add_row' ) ?>
+				</label>
+				<button class="button table_field_add_row_button" onclick="TableFieldAddRow(event);"><?php esc_html_e( 'Add Row', 'gf-table-field' ); ?></button>
+			</li>
 			<?php
 		}
 	}

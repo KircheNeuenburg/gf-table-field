@@ -1,0 +1,23 @@
+.ginput_container_table td {
+    border: 1px black solid;
+    margin: 0;
+    padding: 10px;
+}
+
+.ginput_container_table th {
+    border: 1px blue solid;
+    margin: 0;
+    padding: 10px;
+}
+
+.table_field {
+    border-collapse: collapse;
+}
+
+.table_field .hover {
+    background-color: #F5FF5D;
+}
+
+.table_field td > input {
+    background-color: transparent;
+}
