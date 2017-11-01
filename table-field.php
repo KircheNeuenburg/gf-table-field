@@ -36,7 +36,6 @@ class GF_Field_Table extends GF_Field {
 		return array(
 			'label_setting',
 			'description_setting',
-			'rules_setting',
 			'table_field_add_col',
 			'table_field_add_row',
 			'css_class_setting',
@@ -94,39 +93,51 @@ class GF_Field_Table extends GF_Field {
         }
         else {
             // actual form display
-            $table .= '';
-            
-            // build the new table
-            $table .= '<table id="input_' . $id . '" class="table_field">';
-                // add a colgroup for every col, to enable row highlighting
-                $table .= str_repeat( '<colgroup></colgroup>', sizeof( $this->cols ) + 1 );
-            
-                $table .= '<thead>';
-                $table .= '<tr>';
-                    $table .= '<th></th>';
-                    
-                    foreach( $this->cols as $col ) {
-                        $table .= '<th>' . $col . '</th>';
-                    }
-                $table .= '</tr>';
-            $table .= '</thead><tbody>';
-                foreach( $this->rows as $rid => $row ) {
-                    $table .= '<tr>';
-                        $table .= '<th>' . $row . '</th>';
-                        // add the individual cells
-                        foreach( $this->cols as $cid => $col ) {
-                            $value = '';        // TODO: fill with actual value
-                            $table .= '<td><input type="text" value="' . $value . '" name="input_' . $id . '[' . $cid . '][' . $rid . ']"></td>';
-                        }
-                    $table .= '</tr>';
-                }
-            
-            $table .= '<tbody></table>';
-            
-            
-            return $table;
+            return $this->build_table();
         }
 		
 	}
+    
+    private function build_table( $values = [] ) {
+        $table = '';
+            
+        // build the new table
+        $table .= '<table id="input_' . $this->id . '" class="table_field">';
+            // add a colgroup for every col, to enable row highlighting
+            $table .= str_repeat( '<colgroup></colgroup>', sizeof( $this->cols ) + 1 );
+
+            $table .= '<thead>';
+            $table .= '<tr>';
+                $table .= '<th></th>';
+
+                foreach( $this->cols as $col ) {
+                    $table .= '<th>' . $col . '</th>';
+                }
+            $table .= '</tr>';
+        $table .= '</thead><tbody>';
+            foreach( $this->rows as $rid => $row ) {
+                $table .= '<tr>';
+                    $table .= '<th>' . $row . '</th>';
+                    // add the individual cells
+                    foreach( $this->cols as $cid => $col ) {
+                        $value = isset( $values[ $cid ][ $rid ] ) ? $values[ $cid ][ $rid ] : '';
+                        $table .= '<td><input type="text" value="' . $value . '" name="input_' . $this->id . '[' . $cid . '][' . $rid . ']"></td>';
+                    }
+                $table .= '</tr>';
+            }
+
+        $table .= '<tbody></table>';
+
+        return $table;
+    }
+    
+    public function get_value_save_entry( $value, $form, $input_name, $lead_id, $lead ) {
+        // save the value as json
+        return json_encode( $value );
+    }
+    
+    public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {
+        return $this->build_table( json_decode( $value ) );
+    }
 }
 GF_Fields::register( new GF_Field_Table() );

@@ -18,6 +18,21 @@
     background-color: #F5FF5D;
 }
 
+.table_field tbody th {
+    min-width: 150px;
+}
+
+.table_field td {
+    height: 60px;
+}
+
+.table_field td {
+    padding: 0;
+}
+
 .table_field td > input {
     background-color: transparent;
+    padding: 0 !important;
+    height: 100%;
+    border: none;
 }
