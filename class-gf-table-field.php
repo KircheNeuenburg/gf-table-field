@@ -51,10 +51,11 @@ class GFTableField extends GFAddOn {
 	 * @return array
 	 */
 	public function scripts() {
+        // echo '<pre>' . htmlspecialchars( var_export( parent::scripts(), true ) ) . '</pre>';exit;
 		$scripts = array(
 			array(
 				'handle'  => 'table_field_script',
-				'src'     => $this->get_base_url() . '/script.js',
+				'src'     => $this->get_base_url() . '/front-script.js',
 				'version' => $this->_version,
 				'deps'    => array( 'jquery' ),
 				'enqueue' => array(
@@ -108,7 +109,6 @@ class GFTableField extends GFAddOn {
 	 * @param int $form_id The ID of the form currently being edited.
 	 */
 	public function field_appearance_settings( $position, $form_id ) {
-		// Add our custom setting just before the 'Custom CSS Class' setting.
 		if ( $position == 350 ) {
 			?>
 			<li class="table_field_add_col field_setting">
@@ -116,7 +116,7 @@ class GFTableField extends GFAddOn {
 					<?php esc_html_e( 'Columns', 'gf-table-field' ); ?>
 					<?php gform_tooltip( 'table_field_add_col' ) ?>
 				</label>
-				<button class="button table_field_add_col_button" onclick="TableFieldAddCol(event);"><?php esc_html_e( 'Add Column', 'gf-table-field' ); ?></button>
+				<button class="button table_field_add_col_button" onclick="TableFieldAdd( event, 'col' );"><?php esc_html_e( 'Add Column', 'gf-table-field' ); ?></button>
 			</li>
 			
 			<li class="table_field_add_row field_setting">
@@ -124,8 +124,11 @@ class GFTableField extends GFAddOn {
 					<?php esc_html_e( 'Rows', 'gf-table-field' ); ?>
 					<?php gform_tooltip( 'table_field_add_row' ) ?>
 				</label>
-				<button class="button table_field_add_row_button" onclick="TableFieldAddRow(event);"><?php esc_html_e( 'Add Row', 'gf-table-field' ); ?></button>
+				<button class="button table_field_add_row_button" onclick="TableFieldAdd( event, 'row' );"><?php esc_html_e( 'Add Row', 'gf-table-field' ); ?></button>
 			</li>
+			
+			<script src="<?php echo $this->get_base_url() . '/script.js'; ?>"></script>
+			<link rel="stylesheet" href="<?php echo $this->get_base_url() . '/script.css'; ?>">
 			<?php
 		}
 	}
