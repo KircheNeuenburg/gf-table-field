@@ -103,6 +103,8 @@ class GF_Field_Table extends GF_Field {
             
         // build the new table
         $table .= '<table id="input_' . $this->id . '" class="table_field">';
+			$table .= '<input type="hidden" class="composedTableValue" name="input_' . $this->id . '" value="{}">';
+			
             // add a colgroup for every col, to enable row highlighting
             $table .= str_repeat( '<colgroup></colgroup>', sizeof( $this->cols ) + 1 );
 
@@ -120,8 +122,8 @@ class GF_Field_Table extends GF_Field {
                     $table .= '<th>' . $row . '</th>';
                     // add the individual cells
                     foreach( $this->cols as $cid => $col ) {
-                        $value = isset( $values[ $cid ][ $rid ] ) ? $values[ $cid ][ $rid ] : '';
-                        $table .= '<td><input type="text" value="' . $value . '" name="input_' . $this->id . '[' . $cid . '][' . $rid . ']"></td>';
+                        $value = isset( $values[ $rid ][ $cid ] ) ? $values[ $rid ][ $cid ] : '';
+                        $table .= '<td><input type="text" value="' . $value . '" data-type="table-cell" data-col="' . $cid . '" data-row="' . $rid . '"></td>';
                     }
                 $table .= '</tr>';
             }
@@ -130,12 +132,16 @@ class GF_Field_Table extends GF_Field {
 
         return $table;
     }
-    
+    /*
     public function get_value_save_entry( $value, $form, $input_name, $lead_id, $lead ) {
+		echo '<pre>';var_export( $value ); echo '</pre>';
+		exit;
+		
+		
         // save the value as json
-        return json_encode( $value );
-    }
-    
+        return json_encode( $_REQUEST[ $input_name ] );
+    }*/
+	
     public function get_value_entry_detail( $value, $currency = '', $use_text = false, $format = 'html', $media = 'screen' ) {
         return $this->build_table( json_decode( $value ) );
     }
